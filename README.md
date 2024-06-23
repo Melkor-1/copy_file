@@ -8,7 +8,7 @@ The functions are modeled after Boost library's `filesystem::copy_file` function
 
 ## Building
 
-Note that you would require a C23 compiler to build and run the tests, and specify the compiler with `CC`. To run: 
+Note that you would require a C23 compiler to build and run the tests, and specify the compiler with `CC`. To build and run the tests: 
 
 ```shell
 make CC=gcc-13   # Where gcc-13 is any compiler with C23 support 
