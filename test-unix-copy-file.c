@@ -13,24 +13,9 @@
     #error "Replace /dev/stdin with another file (not regular/not symlink)."
 #endif  /* _AIX */
 
-/* Current versions of gcc and clang support -std=c2x which sets 
- * __STDC_VERSION__ to this placeholder value. GCC 14.1 does not set
- * __STDC_VERSION__ to 202311L with the std=c23 flag, but Clang 18.1 does. */
-#define C23_PLACEHOLDER 202000L
-    
-#if defined(__STDC_VERSION__) && __STDC_VERSION >= C23_PLACEHOLDER
-    #define NORETURN    [[noreturn]]
-#elif defined(_MSC_VER)
-    #define NORETURN    __declspec(noreturn)
-#elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_LLVM_COMPILER)
-    #define NORETURN    __attribute__((noreturn))
-#else
-    #define NORETURN    _Noreturn
-#endif
-
-NORETURN static void cassert(const char cond[static 1], 
-                             const char file[static 1],
-                             size_t line)
+[[noreturn]] static void cassert(const char cond[static 1], 
+                                 const char file[static 1],
+                                 size_t line)
 {
     fflush(stdout);
     fprintf(stderr, "Assertion failed: '%s' at %s, line %zu.\n", cond, file, line);
