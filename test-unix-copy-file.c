@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "copyfile_unix.h"
+#include "unix-copy-file.h"
 
 /* See: https://unix.stackexchange.com/q/338667/553881. */
 #ifdef _AIX
@@ -40,8 +40,8 @@ NORETURN static void cassert(const char cond[static 1],
 #define test(cond) do { \
     if (!(cond)) { cassert(#cond, __FILE__, __LINE__); } } while (false)
 
-static const char *const valid_path1 = "tests.c";
-static const char *const valid_path2 = "tests";
+static const char *const valid_path1 = "unix-copy-file.c";
+static const char *const valid_path2 = "unix-copy-file.h";
 static const char *const invalid_path = "/cdsaknkasc/cskncasdbck/a320cas.caskncas";   
 
 static int valid_fd1;

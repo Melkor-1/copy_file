@@ -1,5 +1,5 @@
-#ifndef COPYFILE_UNIX_H
-#define COPYFILE_UNIX_H 1
+#ifndef UNIX_COPY_FILE_H
+#define UNIX_COPY_FILE_H 1
 
 #include <sys/types.h>
 
@@ -83,4 +83,4 @@
 
 
 
-#endif /* COPYFILE_UNIX_H */
+#endif /* UNIX_COPY_FILE_H */

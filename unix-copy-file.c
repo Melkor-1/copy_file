@@ -9,7 +9,7 @@
 #define _POSIX_C_SOURCE 2008'19L
 #define _XOPEN_SOURCE   700
 
-#include "copyfile_unix.h"
+#include "unix-copy-file.h"
 
 #include <errno.h>
 #include <stddef.h>
