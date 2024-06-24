@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 
+#define UNIX_NONE                   0b0000'0000
 #define UNIX_OVERWRITE_EXISTING     0b0000'0001
 #define UNIX_SKIP_EXISTING          0b0000'0010
 #define UNIX_SYNCHRONIZE_DATA       0b0000'0100
@@ -33,15 +34,15 @@
  *       - Both UNIX_SYNCHRONIZE and UNIX_SYNCHRONIZE_DATA are set.
  *
  *     Otherwise, return successfully with no effect if dest_fd is valid and 
- *     (options & UNIX_SKIP_EXISTING) != 0.
+ *     (options & UNIX_SKIP_EXISTING) != UNIX_NONE.
  *
  *     Otherwise:
  *       - The contents and attributes of the file corresponding to src_fd are
  *         copied to the file corresponding to dest_fd; then
- *       - If (options & UNIX_SYNCHRONIZE) != 0, the written data and attributes
- *         are synchronized with the permanent storage; otherwise
- *       - If (options & UNIX_SYNCHRONIZE_DATA) != 0, the written data is
- *         synchronized with the permanent storage.
+ *       - If (options & UNIX_SYNCHRONIZE) != UNIX_NONE, the written data and 
+ *         attributes are synchronized with the permanent storage; otherwise
+ *       - If (options & UNIX_SYNCHRONIZE_DATA) != UNIX_NONE, the written data
+ *         is synchronized with the permanent storage.
  *
  * Returns:
  *     true if the file was copied without error, otherwise false.
@@ -77,10 +78,8 @@
  * options:   Copy options. 
  *
  * Note: 
- *     If dest_path does not exist, and (options & UNIX_SKIP_EXISTING) == 0,
- *     the file is created. */
+ *     If dest_path does not exist, and (options & UNIX_SKIP_EXISTING) ==
+ *     UNIX_NONE, the file is created. */
 [[nodiscard]] bool unix_fcopy_file(int src_fd, int dest_fd, unsigned char options);
-
-
 
 #endif /* UNIX_COPY_FILE_H */

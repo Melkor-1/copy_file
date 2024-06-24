@@ -175,8 +175,10 @@ bool unix_fcopy_file(int src_fd, int dest_fd, unsigned char options)
     /* The behavior of C++'s filesystem::copy_file is undefined if there is more
      * than one option in any of options option group present in the valid
      * option groups, and perhaps Boost too. We define it and return false. */
-    if (((options & UNIX_SKIP_EXISTING) && (options & UNIX_OVERWRITE_EXISTING))
-        || ((options & UNIX_SYNCHRONIZE) && (options & UNIX_SYNCHRONIZE_DATA))) {
+    if (((options & UNIX_SKIP_EXISTING) != UNIX_NONE 
+            && (options & UNIX_OVERWRITE_EXISTING) != UNIX_NONE)
+        || ((options & UNIX_SYNCHRONIZE) != UNIX_NONE 
+            && (options & UNIX_SYNCHRONIZE_DATA) != UNIX_NONE)) {
         return false;
     }
 
@@ -184,7 +186,7 @@ bool unix_fcopy_file(int src_fd, int dest_fd, unsigned char options)
         return false;
     }
 
-    if (options & UNIX_SKIP_EXISTING) {
+    if ((options & UNIX_SKIP_EXISTING) != UNIX_NONE) {
         /* Do nothing. */
         return false;
     }
@@ -245,8 +247,8 @@ bool unix_fcopy_file(int src_fd, int dest_fd, unsigned char options)
         return false;
     }
 
-    if ((options & (UNIX_SYNCHRONIZE_DATA | UNIX_SYNCHRONIZE))) {
-        return options & UNIX_SYNCHRONIZE_DATA 
+    if ((options & (UNIX_SYNCHRONIZE_DATA | UNIX_SYNCHRONIZE)) != UNIX_NONE) {
+        return (options & UNIX_SYNCHRONIZE_DATA) != UNIX_NONE
             ? fdatasync_eintr(dest_fd) != -1
             : fsync_eintr(dest_fd) != -1;
     }
@@ -286,8 +288,10 @@ bool unix_copy_file(const char src_path[restrict static 1],
                     const char dest_path[restrict static 1],
                     unsigned char options)
 {
-    if (((options & UNIX_SKIP_EXISTING) && (options & UNIX_OVERWRITE_EXISTING))
-        || ((options & UNIX_SYNCHRONIZE) && (options & UNIX_SYNCHRONIZE_DATA))) {
+    if (((options & UNIX_SKIP_EXISTING) != UNIX_NONE 
+            && (options & UNIX_OVERWRITE_EXISTING) != UNIX_NONE)
+        || ((options & UNIX_SYNCHRONIZE) != UNIX_NONE 
+            && (options & UNIX_SYNCHRONIZE_DATA) != UNIX_NONE)) {
         return false;
     }
 
@@ -303,21 +307,21 @@ bool unix_copy_file(const char src_path[restrict static 1],
 
     if (dest_fd = open(dest_path, opts), dest_fd == -1) {
         if (errno != ENOENT) {
-            /* File does not already exist. */
             close_eintr(src_fd);
             return false;
         }
 
-        /* Create it. */
+        /* File does not already exist. Create it. */
         opts |= O_CREAT | O_TRUNC;
 
-        if ((options & UNIX_OVERWRITE_EXISTING) == 0
-            || (options & UNIX_SKIP_EXISTING)) {
+        if ((options & UNIX_OVERWRITE_EXISTING) == UNIX_NONE
+            || (options & UNIX_SKIP_EXISTING) != UNIX_NONE) {
             opts |= O_EXCL;
         }
 
         if (dest_fd = open(dest_path, opts, 0640), dest_fd == -1) {
-            if (errno == EEXIST && (options & UNIX_SKIP_EXISTING)) {
+            if (errno == EEXIST && (options & UNIX_SKIP_EXISTING) != UNIX_NONE) {
+                /* Do nothing. */
                 close_eintr(src_fd);
                 return false;            
             }
@@ -332,17 +336,11 @@ bool unix_copy_file(const char src_path[restrict static 1],
     /* unix_fcopy_file() calls fstat() too. Can we somehow reduce one syscall? */
     if (fstat(dest_fd, &st) == -1
         || (!preallocate_storage(dest_fd, st.st_size) && (errno == EIO || errno == ENOSPC))) {
-        /* FIXME: Oops! But we already truncated the file if UNIX_OVERWRITE_EXISTING
-         * was true. Can we remove/unlink it if it was not? Perhaps do it for
-         * the other error that shall now follow? */
         close_eintr(src_fd);
         close_eintr(dest_fd);
         return false;
     }
     
-    /* TODO: Do not overwrite the destination file in place, since then a failed
-     * copy will leave a damaged file. Or perhaps do not bother with this as we
-     * are already requested to overwrite the file? */
     const bool ret = unix_fcopy_file(src_fd, dest_fd, options);
     
     /* Ignore errors on read-only file. */
