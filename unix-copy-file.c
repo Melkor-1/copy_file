@@ -3,9 +3,6 @@
     #define HAVE_FALLOCATE 1
 #endif  /* __linux__ */
 
-#undef POSIX_C_SOURCE
-#undef _XOPEN_SOURCE
-
 #define _POSIX_C_SOURCE 2008'19L
 #define _XOPEN_SOURCE   700
 
