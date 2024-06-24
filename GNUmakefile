@@ -15,8 +15,6 @@ CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wwrite-strings
 CFLAGS += -Winline
 
-# CFLAGS += -Wno-implicit-function-declaration
-
 # Quieten warning about GCC seeing a one-liner function as un-inlinable.
 CFLAGS += -Wno-attributes
 
