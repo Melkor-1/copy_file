@@ -46,7 +46,7 @@ else ifneq '' '$(findstring gcc,$(COMPILER_VERSION))'
   CFLAGS += $(GCC_CFLAGS)
 endif
 
-SRCS   := tests.c copyfile_unix.c
+SRCS   := unix-copy-file.c test-unix-copy-file.c
 TARGET := tests
 
 test: $(TARGET)
