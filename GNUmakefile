@@ -14,7 +14,11 @@ CFLAGS += -Wpedantic
 CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wwrite-strings
 CFLAGS += -Winline
-CFLAGS += -Wno-implicit-function-declaration
+
+# CFLAGS += -Wno-implicit-function-declaration
+
+# Quieten warning about GCC seeing a one-liner function as un-inlinable.
+CFLAGS += -Wno-attributes
 
 CFLAGS += -fsanitize=float-cast-overflow
 CFLAGS += -fsanitize=address
