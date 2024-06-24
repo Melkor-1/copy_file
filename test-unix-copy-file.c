@@ -124,7 +124,7 @@ static void test_unix_fcopy_file(void)
     const int valid_fd1 = create_temp_file(temp1);
     const int valid_fd2 = create_temp_file(temp2);
     const int invalid_fd = -1;
-    
+
     /* Invalid src_fd. */
     test(!unix_fcopy_file(invalid_fd, valid_fd1, UNIX_OVERWRITE_EXISTING));
 
@@ -158,7 +158,15 @@ static void test_unix_fcopy_file(void)
     
     test(!unix_fcopy_file(valid_fd1, dup_valid_fd1, UNIX_OVERWRITE_EXISTING));
 
-    /* Now test for success. */
+    /* Write something to valid_fd1, and reset seek position.  */
+    fatal(write(valid_fd1, 
+            "To quote Hamlet Act III, Scene III, Line 87: \"No.\"\n", 51) < 51,
+        "error: failed to populate temporary file: %s.\n", strerror(errno));
+
+    /* Reset the seek position first. No error possible in this case. */
+    lseek(valid_fd1, 0, SEEK_SET);
+     
+    /* Test for success. */
     test(unix_fcopy_file(valid_fd1, valid_fd2, UNIX_OVERWRITE_EXISTING | UNIX_SYNCHRONIZE));
     test(has_same_perms_fd(valid_fd1, valid_fd2));
     test(has_same_contents(temp1, temp2));
