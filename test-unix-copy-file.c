@@ -47,18 +47,18 @@
 
 #define BLOCK(...)      do { __VA_ARGS__ } while (false)
 
-#define fatal(cond, fmt, ...)                                     \
+#define fatal(COND, FMT, ...)                                     \
     BLOCK(                                                        \
-        if ((cond)) {                                             \
-            fatal_error("%s::%d::%s(): " fmt, __FILE__, __LINE__, \
+        if (COND) {                                               \
+            fatal_error("%s::%d::%s(): " FMT, __FILE__, __LINE__, \
                 __func__, __VA_ARGS__);                           \
         }                                                         \
     )
     
-#define test(cond)                              \
+#define test(COND)                              \
     BLOCK(                                      \
-        if (!(cond)) {                          \
-            cassert(#cond, __FILE__, __LINE__); \
+        if (!(COND)) {                          \
+            cassert(#COND, __FILE__, __LINE__); \
         }                                       \
     )
 
@@ -111,8 +111,6 @@ static int create_temp_file(char temp[static 1])
 {
     int fd;
 
-    /* printf("%s\n", temp); */
-    /* printf("%d\n", fd = mkstemp(temp)); */
     fatal((fd = mkstemp(temp)) == -1, 
         "error: failed to generate temporary file: %s.\n", strerror(errno));
 
