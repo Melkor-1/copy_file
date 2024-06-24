@@ -16,12 +16,6 @@
 #include <stdint.h>
 
 #include <fcntl.h>
-
-/* For some reason, this macro is not being recognized on Linux. */
-#if defined(HAVE_FALLOCATE) && !defined(FALLOC_FL_KEEP_SIZE)
-    #define FALLOC_FL_KEEP_SIZE 0x01
-#endif  /* FALLOC_FL_KEEP_SIZE */
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
